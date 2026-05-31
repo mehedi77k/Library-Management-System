@@ -61,6 +61,3 @@ Key settings in `src/main/resources/application.properties`:
 ## Notes
 - The application uses `ddl-auto=update`, which auto-creates/updates tables based on entities.
 - A data seeder is available in `com.librarymanagement.config.DataSeeder`.
-
-## License
-MIT
