@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Overview of your library system.</p>
+        </div>
+    </div>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Books</h3>
+            <p th:text="${totalBooks}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Available Books</h3>
+            <p th:text="${availableBooks}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Members</h3>
+            <p th:text="${totalMembers}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Active Members</h3>
+            <p th:text="${activeMembers}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Issued Books</h3>
+            <p th:text="${issuedBooks}">0</p>
+        </div>
+
+        <div class="stat-card danger">
+            <h3>Overdue Books</h3>
+            <p th:text="${overdueBooks}">0</p>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>

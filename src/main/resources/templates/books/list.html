@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Books | Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Books</h1>
+            <p>Manage all library books.</p>
+        </div>
+
+        <a class="btn primary" th:href="@{/books/add}">Add Book</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+    <form class="search-form" th:action="@{/books}" method="get">
+        <input type="text" name="keyword" placeholder="Search by title, author, or ISBN" th:value="${keyword}">
+        <button type="submit" class="btn">Search</button>
+        <a class="btn secondary" th:href="@{/books}">Reset</a>
+    </form>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Category</th>
+                <th>Total</th>
+                <th>Available</th>
+                <th>Status</th>
+                <th class="actions-column">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.id}">1</td>
+                <td th:text="${book.title}">Book Title</td>
+                <td th:text="${book.author}">Author</td>
+                <td th:text="${book.isbn}">ISBN</td>
+                <td th:text="${book.category}">Category</td>
+                <td th:text="${book.totalCopies}">0</td>
+                <td th:text="${book.availableCopies}">0</td>
+                <td>
+                    <span th:if="${book.availableCopies > 0}" class="badge success">Available</span>
+                    <span th:if="${book.availableCopies <= 0}" class="badge danger">Unavailable</span>
+                </td>
+                <td>
+                    <a class="btn small" th:href="@{'/books/edit/' + ${book.id}}">Edit</a>
+                    <a class="btn small danger"
+                       th:href="@{'/books/delete/' + ${book.id}}"
+                       onclick="return confirm('Are you sure you want to delete this book?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(books)}">
+                <td colspan="9" class="empty">No books found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>

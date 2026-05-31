@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle} + ' | Library Management System'">Member Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container narrow">
+    <div class="page-header">
+        <div>
+            <h1 th:text="${pageTitle}">Member Form</h1>
+            <p>Enter member information carefully.</p>
+        </div>
+    </div>
+
+    <form class="form-card" th:action="@{/members/save}" th:object="${member}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" th:field="*{name}" placeholder="Enter member name">
+            <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" th:field="*{email}" placeholder="Enter email address">
+            <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" th:field="*{phone}" placeholder="Enter phone number">
+            <span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Address</label>
+            <textarea th:field="*{address}" placeholder="Enter address"></textarea>
+            <span class="field-error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select th:field="*{active}">
+                <option th:value="true">Active</option>
+                <option th:value="false">Inactive</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">Save</button>
+            <a class="btn secondary" th:href="@{/members}">Cancel</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>

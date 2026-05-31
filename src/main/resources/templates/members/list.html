@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Members | Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Members</h1>
+            <p>Manage library members.</p>
+        </div>
+
+        <a class="btn primary" th:href="@{/members/add}">Add Member</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+    <form class="search-form" th:action="@{/members}" method="get">
+        <input type="text" name="keyword" placeholder="Search by name, email, or phone" th:value="${keyword}">
+        <button type="submit" class="btn">Search</button>
+        <a class="btn secondary" th:href="@{/members}">Reset</a>
+    </form>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th class="actions-column">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="member : ${members}">
+                <td th:text="${member.id}">1</td>
+                <td th:text="${member.name}">Member Name</td>
+                <td th:text="${member.email}">member@email.com</td>
+                <td th:text="${member.phone}">Phone</td>
+                <td th:text="${member.address}">Address</td>
+                <td>
+                    <span th:if="${member.active}" class="badge success">Active</span>
+                    <span th:if="${!member.active}" class="badge danger">Inactive</span>
+                </td>
+                <td>
+                    <a class="btn small" th:href="@{'/members/edit/' + ${member.id}}">Edit</a>
+                    <a class="btn small danger"
+                       th:href="@{'/members/delete/' + ${member.id}}"
+                       onclick="return confirm('Are you sure you want to delete this member?')">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(members)}">
+                <td colspan="7" class="empty">No members found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>

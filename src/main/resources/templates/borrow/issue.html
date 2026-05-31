@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Issue Book | Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container narrow">
+    <div class="page-header">
+        <div>
+            <h1>Issue Book</h1>
+            <p>Select a book and a member to create a borrow record.</p>
+        </div>
+    </div>
+
+    <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+    <form class="form-card" th:action="@{/borrow/issue}" method="post">
+        <div class="form-group">
+            <label>Book</label>
+            <select name="bookId" required>
+                <option value="">Select Book</option>
+                <option th:each="book : ${books}"
+                        th:value="${book.id}"
+                        th:disabled="${book.availableCopies <= 0}"
+                        th:text="${book.title + ' | Available: ' + book.availableCopies}">
+                    Book
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Member</label>
+            <select name="memberId" required>
+                <option value="">Select Member</option>
+                <option th:each="member : ${members}"
+                        th:value="${member.id}"
+                        th:disabled="${!member.active}"
+                        th:text="${member.name + ' | ' + member.email}">
+                    Member
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Borrowing Days</label>
+            <input type="number" name="borrowingDays" value="14" min="1" required>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">Issue Book</button>
+            <a class="btn secondary" th:href="@{/borrow/records}">View Records</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>

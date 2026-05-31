@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Borrow Records | Library Management System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="brand">Library Management System</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/books}">Books</a>
+        <a th:href="@{/members}">Members</a>
+        <a th:href="@{/borrow/issue}">Issue Book</a>
+        <a th:href="@{/borrow/records}">Borrow Records</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Borrow Records</h1>
+            <p>Track issued, returned, and overdue books.</p>
+        </div>
+
+        <a class="btn primary" th:href="@{/borrow/issue}">Issue Book</a>
+    </div>
+
+    <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+    <div class="filter-bar">
+        <a class="btn" th:href="@{/borrow/records}">All Records</a>
+        <a class="btn secondary" th:href="@{/borrow/records(filter='active')}">Active Issued Records</a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+                <th class="actions-column">Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.book.title}">Book</td>
+                <td th:text="${record.member.name}">Member</td>
+                <td th:text="${record.issueDate}">Issue Date</td>
+                <td th:text="${record.dueDate}">Due Date</td>
+                <td th:text="${record.returnDate != null ? record.returnDate : '-'}">Return Date</td>
+                <td>
+                    <span th:if="${record.status.name() == 'ISSUED'}" class="badge warning">Issued</span>
+                    <span th:if="${record.status.name() == 'RETURNED'}" class="badge success">Returned</span>
+                </td>
+                <td th:text="${record.fineAmount}">0.00</td>
+                <td>
+                    <form th:if="${record.status.name() == 'ISSUED'}"
+                          th:action="@{'/borrow/return/' + ${record.id}}"
+                          method="post"
+                          onsubmit="return confirm('Confirm book return?')">
+                        <button type="submit" class="btn small primary">Return</button>
+                    </form>
+
+                    <span th:if="${record.status.name() == 'RETURNED'}">Completed</span>
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="9" class="empty">No borrow records found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>
