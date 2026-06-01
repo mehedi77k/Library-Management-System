@@ -1,10 +1,14 @@
 package com.librarymanagement.config;
 
+import com.librarymanagement.entity.AppUser;
 import com.librarymanagement.entity.Book;
 import com.librarymanagement.entity.Member;
+import com.librarymanagement.entity.Role;
+import com.librarymanagement.repository.AppUserRepository;
 import com.librarymanagement.repository.BookRepository;
 import com.librarymanagement.repository.MemberRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,19 +16,52 @@ public class DataSeeder implements CommandLineRunner {
 
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
+    private final AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(
             BookRepository bookRepository,
-            MemberRepository memberRepository
+            MemberRepository memberRepository,
+            AppUserRepository appUserRepository,
+            PasswordEncoder passwordEncoder
     ) {
         this.bookRepository = bookRepository;
         this.memberRepository = memberRepository;
+        this.appUserRepository = appUserRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
+        seedUsers();
         seedBooks();
         seedMembers();
+    }
+
+    private void seedUsers() {
+        if (!appUserRepository.existsByUsername("admin")) {
+            AppUser admin = new AppUser(
+                    "admin",
+                    passwordEncoder.encode("admin123"),
+                    "System Administrator",
+                    "admin@library.com",
+                    Role.ROLE_ADMIN
+            );
+
+            appUserRepository.save(admin);
+        }
+
+        if (!appUserRepository.existsByUsername("librarian")) {
+            AppUser librarian = new AppUser(
+                    "librarian",
+                    passwordEncoder.encode("lib123"),
+                    "Default Librarian",
+                    "librarian@library.com",
+                    Role.ROLE_LIBRARIAN
+            );
+
+            appUserRepository.save(librarian);
+        }
     }
 
     private void seedBooks() {

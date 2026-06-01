@@ -6,6 +6,7 @@ import com.librarymanagement.repository.BookRepository;
 import com.librarymanagement.repository.BorrowRecordRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -84,45 +85,55 @@ public class BookController {
     public String saveBook(
             @Valid @ModelAttribute("book") Book book,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageTitle", book.getId() == null ? "Add New Book" : "Edit Book");
             return "books/form";
         }
 
-        if (book.getId() == null) {
-            book.setAvailableCopies(book.getTotalCopies());
-        } else {
-            Book existingBook = bookRepository.findById(book.getId()).orElse(null);
-
-            if (existingBook != null) {
-                int borrowedCopies = existingBook.getTotalCopies() - existingBook.getAvailableCopies();
-
-                if (book.getTotalCopies() < borrowedCopies) {
-                    bindingResult.rejectValue(
-                            "totalCopies",
-                            "invalid.totalCopies",
-                            "Total copies cannot be less than currently issued copies: " + borrowedCopies
-                    );
-
-                    model.addAttribute("pageTitle", "Edit Book");
-                    return "books/form";
-                }
-
-                book.setAvailableCopies(book.getTotalCopies() - borrowedCopies);
-                book.setCreatedAt(existingBook.getCreatedAt());
-            } else {
+        try {
+            if (book.getId() == null) {
                 book.setAvailableCopies(book.getTotalCopies());
-            }
-        }
+            } else {
+                Book existingBook = bookRepository.findById(book.getId()).orElse(null);
 
-        bookRepository.save(book);
+                if (existingBook != null) {
+                    int borrowedCopies = existingBook.getTotalCopies() - existingBook.getAvailableCopies();
+
+                    if (book.getTotalCopies() < borrowedCopies) {
+                        bindingResult.rejectValue(
+                                "totalCopies",
+                                "invalid.totalCopies",
+                                "Total copies cannot be less than currently issued copies: " + borrowedCopies
+                        );
+
+                        model.addAttribute("pageTitle", "Edit Book");
+                        return "books/form";
+                    }
+
+                    book.setAvailableCopies(book.getTotalCopies() - borrowedCopies);
+                    book.setCreatedAt(existingBook.getCreatedAt());
+                } else {
+                    book.setAvailableCopies(book.getTotalCopies());
+                }
+            }
+
+            bookRepository.save(book);
+            redirectAttributes.addFlashAttribute("successMessage", "Book saved successfully.");
+        } catch (Exception exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Book could not be saved. ISBN may already exist."
+            );
+        }
 
         return "redirect:/books";
     }
 
-    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete/{id}")
     public String deleteBook(
             @PathVariable Long id,
             RedirectAttributes redirectAttributes

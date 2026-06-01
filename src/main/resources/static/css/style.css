@@ -27,6 +27,7 @@ body {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .nav-links a {
@@ -37,6 +38,29 @@ body {
 
 .nav-links a:hover {
     text-decoration: underline;
+}
+
+.logged-user {
+    font-size: 13px;
+    color: #d1d5db;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-button {
+    border: 1px solid #374151;
+    background: #1f2937;
+    color: #ffffff;
+    padding: 7px 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.logout-button:hover {
+    background: #374151;
 }
 
 .container {
@@ -179,6 +203,16 @@ th {
     font-size: 13px;
 }
 
+.btn.full-width {
+    width: 100%;
+    text-align: center;
+}
+
+.inline-form {
+    display: inline-block;
+    margin: 0;
+}
+
 .badge {
     padding: 5px 9px;
     border-radius: 999px;
@@ -275,6 +309,59 @@ th {
     color: #dc2626;
     font-size: 13px;
     margin-top: 6px;
+}
+
+/* Authentication Page */
+
+.auth-body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #111827 0%, #1f2937 45%, #2563eb 100%);
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+}
+
+.auth-header {
+    margin-bottom: 24px;
+}
+
+.auth-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: #111827;
+}
+
+.auth-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.demo-login-box {
+    margin-top: 18px;
+    padding: 14px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.demo-login-box p {
+    margin: 5px 0;
+    color: #374151;
+    font-size: 13px;
 }
 
 @media (max-width: 800px) {

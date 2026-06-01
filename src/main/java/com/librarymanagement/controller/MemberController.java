@@ -6,6 +6,7 @@ import com.librarymanagement.repository.BorrowRecordRepository;
 import com.librarymanagement.repository.MemberRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -84,27 +85,37 @@ public class MemberController {
     public String saveMember(
             @Valid @ModelAttribute("member") Member member,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageTitle", member.getId() == null ? "Add New Member" : "Edit Member");
             return "members/form";
         }
 
-        if (member.getId() != null) {
-            Member existingMember = memberRepository.findById(member.getId()).orElse(null);
+        try {
+            if (member.getId() != null) {
+                Member existingMember = memberRepository.findById(member.getId()).orElse(null);
 
-            if (existingMember != null) {
-                member.setCreatedAt(existingMember.getCreatedAt());
+                if (existingMember != null) {
+                    member.setCreatedAt(existingMember.getCreatedAt());
+                }
             }
-        }
 
-        memberRepository.save(member);
+            memberRepository.save(member);
+            redirectAttributes.addFlashAttribute("successMessage", "Member saved successfully.");
+        } catch (Exception exception) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Member could not be saved. Email may already exist."
+            );
+        }
 
         return "redirect:/members";
     }
 
-    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete/{id}")
     public String deleteMember(
             @PathVariable Long id,
             RedirectAttributes redirectAttributes
