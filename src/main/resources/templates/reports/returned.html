@@ -13,7 +13,10 @@
             <p>All books that have been returned by members.</p>
         </div>
 
-        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        <div class="export-actions">
+            <a class="btn primary" th:href="@{/reports/export/returned/excel}">Export Excel</a>
+            <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        </div>
     </div>
 
     <div class="result-summary">

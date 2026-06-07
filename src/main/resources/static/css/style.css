@@ -260,6 +260,7 @@ body {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
+    gap: 14px;
 }
 
 .section-header h2 {
@@ -275,6 +276,19 @@ body {
 
 .section-header a:hover {
     text-decoration: underline;
+}
+
+.section-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.export-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .empty-state-card {
@@ -753,6 +767,10 @@ th {
         width: 100%;
         justify-content: space-between;
     }
+
+    .export-actions {
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 900px) {
@@ -808,5 +826,10 @@ th {
 
     .pagination {
         justify-content: flex-start;
+    }
+
+    .section-header {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

@@ -13,7 +13,11 @@
             <p>Late return fine records and total collected fine.</p>
         </div>
 
-        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        <div class="export-actions">
+            <a class="btn primary" th:href="@{/reports/export/fines/pdf}">Export PDF</a>
+            <a class="btn primary" th:href="@{/reports/export/fines/excel}">Export Excel</a>
+            <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        </div>
     </div>
 
     <section class="stats-grid single-stat">

@@ -13,7 +13,15 @@
             <p>Select a member to view complete borrowing history.</p>
         </div>
 
-        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        <div class="export-actions">
+            <a class="btn primary"
+               th:if="${selectedMember != null}"
+               th:href="@{/reports/export/member-history/excel(memberId=${selectedMemberId})}">
+                Export Excel
+            </a>
+
+            <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        </div>
     </div>
 
     <form class="filter-card" th:action="@{/reports/member-history}" method="get">

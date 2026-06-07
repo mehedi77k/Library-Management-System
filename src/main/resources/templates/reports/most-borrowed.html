@@ -13,7 +13,10 @@
             <p>Books ranked by total borrowing count.</p>
         </div>
 
-        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        <div class="export-actions">
+            <a class="btn primary" th:href="@{/reports/export/most-borrowed/excel}">Export Excel</a>
+            <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+        </div>
     </div>
 
     <div class="result-summary">

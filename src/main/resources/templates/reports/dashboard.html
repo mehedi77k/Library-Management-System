@@ -12,6 +12,10 @@
             <h1>Reports Dashboard</h1>
             <p>Overview of library activity, overdue books, fines, and borrowing trends.</p>
         </div>
+
+        <div class="export-actions">
+            <a class="btn primary" th:href="@{/reports/export/summary/pdf}">Export Summary PDF</a>
+        </div>
     </div>
 
     <div th:replace="~{fragments/messages :: messages}"></div>
@@ -84,7 +88,10 @@
         <div class="report-panel">
             <div class="section-header">
                 <h2>Top Borrowed Books</h2>
-                <a th:href="@{/reports/most-borrowed}">View all</a>
+                <div class="section-actions">
+                    <a th:href="@{/reports/export/most-borrowed/excel}">Export Excel</a>
+                    <a th:href="@{/reports/most-borrowed}">View all</a>
+                </div>
             </div>
 
             <div class="table-card compact">
@@ -114,7 +121,11 @@
         <div class="report-panel">
             <div class="section-header">
                 <h2>Current Overdue Books</h2>
-                <a th:href="@{/reports/overdue}">View all</a>
+                <div class="section-actions">
+                    <a th:href="@{/reports/export/overdue/pdf}">Export PDF</a>
+                    <a th:href="@{/reports/export/overdue/excel}">Export Excel</a>
+                    <a th:href="@{/reports/overdue}">View all</a>
+                </div>
             </div>
 
             <div class="table-card compact">
