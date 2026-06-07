@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Overdue Books Report')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Overdue Books Report</h1>
+            <p>Currently issued books that passed their due date.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <div class="result-summary">
+        <span th:text="'Total overdue records: ' + ${#lists.size(overdueRows)}">Total overdue records: 0</span>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Overdue Days</th>
+                <th>Estimated Fine</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="row : ${overdueRows}">
+                <td th:text="${row.borrowRecord.id}">1</td>
+                <td th:text="${row.borrowRecord.book.title}">Book</td>
+                <td th:text="${row.borrowRecord.member.name}">Member</td>
+                <td th:text="${#temporals.format(row.borrowRecord.issueDate, 'yyyy-MM-dd')}">Issue Date</td>
+                <td th:text="${#temporals.format(row.borrowRecord.dueDate, 'yyyy-MM-dd')}">Due Date</td>
+                <td th:text="${row.overdueDays}">0</td>
+                <td th:text="${'BDT ' + #numbers.formatDecimal(row.estimatedFine, 1, 2)}">BDT 0.00</td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(overdueRows)}">
+                <td colspan="7" class="empty">No overdue books found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

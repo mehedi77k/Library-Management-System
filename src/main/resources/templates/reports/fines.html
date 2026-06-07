@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Fine Collection Report')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Fine Collection Report</h1>
+            <p>Late return fine records and total collected fine.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <section class="stats-grid single-stat">
+        <div class="stat-card">
+            <h3>Total Fine Collected</h3>
+            <p th:text="${'BDT ' + #numbers.formatDecimal(totalFine, 1, 2)}">BDT 0.00</p>
+        </div>
+    </section>
+
+    <div class="result-summary">
+        <span th:text="'Fine records: ' + ${#lists.size(records)}">Fine records: 0</span>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Book</th>
+                <th>Member</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Fine Amount</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.book.title}">Book</td>
+                <td th:text="${record.member.name}">Member</td>
+                <td th:text="${#temporals.format(record.dueDate, 'yyyy-MM-dd')}">Due Date</td>
+                <td th:text="${record.returnDate != null ? #temporals.format(record.returnDate, 'yyyy-MM-dd') : '-'}">Return Date</td>
+                <td th:text="${'BDT ' + #numbers.formatDecimal(record.fineAmount, 1, 2)}">BDT 0.00</td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="6" class="empty">No fine records found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

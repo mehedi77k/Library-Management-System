@@ -35,6 +35,11 @@
             Borrow Records
         </a>
 
+        <a th:href="@{/reports}"
+           th:classappend="${activePage == 'reports'} ? ' active' : ''">
+            Reports
+        </a>
+
         <a sec:authorize="hasRole('ADMIN')"
            th:href="@{/librarians}"
            th:classappend="${activePage == 'librarians'} ? ' active' : ''">

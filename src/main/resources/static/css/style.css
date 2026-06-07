@@ -140,6 +140,12 @@ body {
     gap: 18px;
 }
 
+.stats-grid.single-stat {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin-bottom: 22px;
+}
+
 .stat-card {
     background: #ffffff;
     padding: 24px;
@@ -204,6 +210,87 @@ body {
     line-height: 1.5;
 }
 
+/* Reports */
+
+.report-link-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.report-link-card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
+    text-decoration: none;
+}
+
+.report-link-card:hover {
+    border-color: #2563eb;
+}
+
+.report-link-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.report-link-card p {
+    margin: 0;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.two-column-report {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.report-panel {
+    min-width: 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.section-header a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.section-header a:hover {
+    text-decoration: underline;
+}
+
+.empty-state-card {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    padding: 32px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.empty-state-card h2 {
+    margin: 0 0 10px 0;
+    color: #111827;
+}
+
 /* Cards and Tables */
 
 .table-card,
@@ -219,6 +306,11 @@ body {
 
 .table-card {
     overflow-x: auto;
+}
+
+.table-card.compact th,
+.table-card.compact td {
+    padding: 12px 14px;
 }
 
 .details-card {
@@ -263,6 +355,10 @@ body {
     grid-template-columns: 1.5fr 1fr 1fr 140px;
     gap: 14px;
     align-items: end;
+}
+
+.filter-row.member-history-filter {
+    grid-template-columns: 1fr;
 }
 
 .filter-group {
@@ -637,6 +733,14 @@ th {
     .filter-row {
         grid-template-columns: 1fr 1fr;
     }
+
+    .report-link-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .two-column-report {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 1000px) {
@@ -657,6 +761,10 @@ th {
     }
 
     .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-link-grid {
         grid-template-columns: 1fr;
     }
 }

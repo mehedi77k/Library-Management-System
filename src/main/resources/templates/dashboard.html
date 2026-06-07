@@ -73,6 +73,11 @@
                 <p>Track issued, returned, and overdue books.</p>
             </a>
 
+            <a class="quick-action-card" th:href="@{/reports}">
+                <h3>Reports</h3>
+                <p>View overdue, issued, returned, fine, and borrowing history reports.</p>
+            </a>
+
             <a sec:authorize="hasRole('ADMIN')" class="quick-action-card" th:href="@{/librarians}">
                 <h3>Manage Librarians</h3>
                 <p>Create, update, disable, and reset librarian accounts.</p>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Issued Books Report')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Issued Books Report</h1>
+            <p>All books currently issued to members.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <div class="result-summary">
+        <span th:text="'Total issued records: ' + ${#lists.size(records)}">Total issued records: 0</span>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Book</th>
+                <th>ISBN</th>
+                <th>Member</th>
+                <th>Member Email</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.book.title}">Book</td>
+                <td th:text="${record.book.isbn}">ISBN</td>
+                <td th:text="${record.member.name}">Member</td>
+                <td th:text="${record.member.email != null ? record.member.email : '-'}">Email</td>
+                <td th:text="${#temporals.format(record.issueDate, 'yyyy-MM-dd')}">Issue Date</td>
+                <td th:text="${#temporals.format(record.dueDate, 'yyyy-MM-dd')}">Due Date</td>
+                <td><span class="badge warning">Issued</span></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="8" class="empty">No issued books found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

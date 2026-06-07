@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Member Borrowing History')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Member Borrowing History</h1>
+            <p>Select a member to view complete borrowing history.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <form class="filter-card" th:action="@{/reports/member-history}" method="get">
+        <div class="filter-row member-history-filter">
+            <div class="filter-group large">
+                <label>Member</label>
+                <select name="memberId" required>
+                    <option value="">Select Member</option>
+                    <option th:each="member : ${members}"
+                            th:value="${member.id}"
+                            th:text="${member.name + ' | ' + (member.email != null ? member.email : 'No Email')}"
+                            th:selected="${selectedMemberId != null and selectedMemberId == member.id}">
+                        Member
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">View History</button>
+            <a class="btn secondary" th:href="@{/reports/member-history}">Reset</a>
+        </div>
+    </form>
+
+    <div th:if="${selectedMember != null}" class="details-card">
+        <p><strong>Member Name:</strong> <span th:text="${selectedMember.name}">Name</span></p>
+        <p><strong>Email:</strong> <span th:text="${selectedMember.email != null ? selectedMember.email : '-'}">Email</span></p>
+        <p><strong>Phone:</strong> <span th:text="${selectedMember.phone != null ? selectedMember.phone : '-'}">Phone</span></p>
+        <p>
+            <strong>Status:</strong>
+            <span th:if="${selectedMember.active}" class="badge success">Active</span>
+            <span th:if="${!selectedMember.active}" class="badge danger">Inactive</span>
+        </p>
+    </div>
+
+    <div class="result-summary" th:if="${selectedMember != null}">
+        <span th:text="'Total records for this member: ' + ${#lists.size(records)}">Total records: 0</span>
+    </div>
+
+    <div class="table-card" th:if="${selectedMember != null}">
+        <table>
+            <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Book</th>
+                <th>ISBN</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>Fine</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.book.title}">Book</td>
+                <td th:text="${record.book.isbn}">ISBN</td>
+                <td th:text="${#temporals.format(record.issueDate, 'yyyy-MM-dd')}">Issue Date</td>
+                <td th:text="${#temporals.format(record.dueDate, 'yyyy-MM-dd')}">Due Date</td>
+                <td th:text="${record.returnDate != null ? #temporals.format(record.returnDate, 'yyyy-MM-dd') : '-'}">Return Date</td>
+                <td>
+                    <span th:if="${record.status.name() == 'ISSUED'}" class="badge warning">Issued</span>
+                    <span th:if="${record.status.name() == 'RETURNED'}" class="badge success">Returned</span>
+                </td>
+                <td th:text="${'BDT ' + #numbers.formatDecimal(record.fineAmount, 1, 2)}">BDT 0.00</td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="8" class="empty">No borrowing history found for this member.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${selectedMember == null}" class="empty-state-card">
+        <h2>No member selected</h2>
+        <p>Select a member from the dropdown above to view their borrowing history.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

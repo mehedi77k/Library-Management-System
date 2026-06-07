@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Most Borrowed Books')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Most Borrowed Books</h1>
+            <p>Books ranked by total borrowing count.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <div class="result-summary">
+        <span th:text="'Total listed books: ' + ${#lists.size(rows)}">Total listed books: 0</span>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Total Borrowed</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="row, iter : ${rows}">
+                <td th:text="${iter.index + 1}">1</td>
+                <td th:text="${row.title}">Book</td>
+                <td th:text="${row.author}">Author</td>
+                <td th:text="${row.isbn}">ISBN</td>
+                <td th:text="${row.borrowCount}">0</td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(rows)}">
+                <td colspan="5" class="empty">No borrowing data found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

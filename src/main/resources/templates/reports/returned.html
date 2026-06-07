@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Returned Books Report')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Returned Books Report</h1>
+            <p>All books that have been returned by members.</p>
+        </div>
+
+        <a class="btn secondary" th:href="@{/reports}">Back to Reports</a>
+    </div>
+
+    <div class="result-summary">
+        <span th:text="'Total returned records: ' + ${#lists.size(records)}">Total returned records: 0</span>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Book</th>
+                <th>ISBN</th>
+                <th>Member</th>
+                <th>Issue Date</th>
+                <th>Due Date</th>
+                <th>Return Date</th>
+                <th>Fine</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.book.title}">Book</td>
+                <td th:text="${record.book.isbn}">ISBN</td>
+                <td th:text="${record.member.name}">Member</td>
+                <td th:text="${#temporals.format(record.issueDate, 'yyyy-MM-dd')}">Issue Date</td>
+                <td th:text="${#temporals.format(record.dueDate, 'yyyy-MM-dd')}">Due Date</td>
+                <td th:text="${record.returnDate != null ? #temporals.format(record.returnDate, 'yyyy-MM-dd') : '-'}">Return Date</td>
+                <td th:text="${'BDT ' + #numbers.formatDecimal(record.fineAmount, 1, 2)}">BDT 0.00</td>
+                <td><span class="badge success">Returned</span></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="9" class="empty">No returned books found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 "/dashboard",
                                 "/books/**",
                                 "/members/**",
-                                "/borrow/**"
+                                "/borrow/**",
+                                "/reports/**"
                         ).hasAnyRole("ADMIN", "LIBRARIAN")
 
                         .anyRequest().authenticated()

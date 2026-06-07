@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Reports Dashboard')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('reports')}"></div>
+
+<main class="container">
+    <div class="page-header">
+        <div>
+            <h1>Reports Dashboard</h1>
+            <p>Overview of library activity, overdue books, fines, and borrowing trends.</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/messages :: messages}"></div>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Books</h3>
+            <p th:text="${summary.totalBooks}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Available Books</h3>
+            <p th:text="${summary.availableBooks}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Members</h3>
+            <p th:text="${summary.totalMembers}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Issued Books</h3>
+            <p th:text="${summary.issuedBooks}">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Returned Books</h3>
+            <p th:text="${summary.returnedBooks}">0</p>
+        </div>
+
+        <div class="stat-card danger">
+            <h3>Overdue Books</h3>
+            <p th:text="${summary.overdueBooks}">0</p>
+        </div>
+    </section>
+
+    <section class="report-link-grid">
+        <a class="report-link-card" th:href="@{/reports/overdue}">
+            <h3>Overdue Books Report</h3>
+            <p>View currently overdue issued books with overdue days and estimated fine.</p>
+        </a>
+
+        <a class="report-link-card" th:href="@{/reports/issued}">
+            <h3>Issued Books Report</h3>
+            <p>View all books that are currently issued to members.</p>
+        </a>
+
+        <a class="report-link-card" th:href="@{/reports/returned}">
+            <h3>Returned Books Report</h3>
+            <p>View returned books and their return dates.</p>
+        </a>
+
+        <a class="report-link-card" th:href="@{/reports/fines}">
+            <h3>Fine Collection Report</h3>
+            <p>View collected fines from late returned books.</p>
+        </a>
+
+        <a class="report-link-card" th:href="@{/reports/member-history}">
+            <h3>Member Borrowing History</h3>
+            <p>Search a member and view their complete borrowing history.</p>
+        </a>
+
+        <a class="report-link-card" th:href="@{/reports/most-borrowed}">
+            <h3>Most Borrowed Books</h3>
+            <p>View the most frequently borrowed books.</p>
+        </a>
+    </section>
+
+    <section class="two-column-report">
+        <div class="report-panel">
+            <div class="section-header">
+                <h2>Top Borrowed Books</h2>
+                <a th:href="@{/reports/most-borrowed}">View all</a>
+            </div>
+
+            <div class="table-card compact">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Borrowed</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${topBorrowedBooks}">
+                        <td th:text="${row.title}">Book</td>
+                        <td th:text="${row.author}">Author</td>
+                        <td th:text="${row.borrowCount}">0</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(topBorrowedBooks)}">
+                        <td colspan="3" class="empty">No borrowing data found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-panel">
+            <div class="section-header">
+                <h2>Current Overdue Books</h2>
+                <a th:href="@{/reports/overdue}">View all</a>
+            </div>
+
+            <div class="table-card compact">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Member</th>
+                        <th>Days</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${overdueRows}">
+                        <td th:text="${row.borrowRecord.book.title}">Book</td>
+                        <td th:text="${row.borrowRecord.member.name}">Member</td>
+                        <td th:text="${row.overdueDays}">0</td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(overdueRows)}">
+                        <td colspan="3" class="empty">No overdue books found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
