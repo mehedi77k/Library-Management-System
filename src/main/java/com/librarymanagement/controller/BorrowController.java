@@ -6,17 +6,24 @@ import com.librarymanagement.repository.BookRepository;
 import com.librarymanagement.repository.BorrowRecordRepository;
 import com.librarymanagement.repository.MemberRepository;
 import com.librarymanagement.service.LibraryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
 @RequestMapping("/borrow")
 public class BorrowController {
+
+    private static final List<Integer> PAGE_SIZES = List.of(5, 10, 20, 50);
 
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
@@ -62,19 +69,45 @@ public class BorrowController {
 
     @GetMapping("/records")
     public String showBorrowRecords(
-            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false, defaultValue = "ALL") String status,
+            @RequestParam(value = "overdue", required = false, defaultValue = "false") boolean overdue,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             Model model
     ) {
-        List<BorrowRecord> records;
+        int validPage = Math.max(page, 0);
+        int validSize = normalizePageSize(size);
 
-        if ("active".equalsIgnoreCase(filter)) {
-            records = borrowRecordRepository.findByStatusOrderByDueDateAsc(BorrowStatus.ISSUED);
-        } else {
-            records = borrowRecordRepository.findAllByOrderByIdDesc();
-        }
+        String cleanKeyword = normalizeText(keyword);
+        String selectedStatus = normalizeBorrowStatus(status);
+        BorrowStatus statusFilter = resolveBorrowStatus(selectedStatus);
 
-        model.addAttribute("records", records);
-        model.addAttribute("filter", filter);
+        Pageable pageable = PageRequest.of(
+                validPage,
+                validSize,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
+        Page<BorrowRecord> recordPage = borrowRecordRepository.searchBorrowRecords(
+                cleanKeyword,
+                statusFilter,
+                overdue,
+                BorrowStatus.ISSUED,
+                LocalDate.now(),
+                pageable
+        );
+
+        model.addAttribute("recordPage", recordPage);
+        model.addAttribute("records", recordPage.getContent());
+
+        model.addAttribute("keyword", cleanKeyword == null ? "" : cleanKeyword);
+        model.addAttribute("status", selectedStatus);
+        model.addAttribute("overdue", overdue);
+
+        model.addAttribute("pageSizes", PAGE_SIZES);
+        model.addAttribute("pageSize", validSize);
+        model.addAttribute("currentPage", recordPage.getNumber());
 
         return "borrow/records";
     }
@@ -92,5 +125,47 @@ public class BorrowController {
         }
 
         return "redirect:/borrow/records";
+    }
+
+    private int normalizePageSize(int size) {
+        if (PAGE_SIZES.contains(size)) {
+            return size;
+        }
+
+        return 10;
+    }
+
+    private String normalizeText(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+
+        return value.trim();
+    }
+
+    private String normalizeBorrowStatus(String status) {
+        if (!StringUtils.hasText(status)) {
+            return "ALL";
+        }
+
+        String value = status.trim().toUpperCase();
+
+        if (value.equals("ISSUED") || value.equals("RETURNED")) {
+            return value;
+        }
+
+        return "ALL";
+    }
+
+    private BorrowStatus resolveBorrowStatus(String status) {
+        if ("ISSUED".equals(status)) {
+            return BorrowStatus.ISSUED;
+        }
+
+        if ("RETURNED".equals(status)) {
+            return BorrowStatus.RETURNED;
+        }
+
+        return null;
     }
 }

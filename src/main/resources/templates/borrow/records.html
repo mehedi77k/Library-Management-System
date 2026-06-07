@@ -11,7 +11,7 @@
     <div class="page-header">
         <div>
             <h1>Borrow Records</h1>
-            <p>Track issued, returned, and overdue books.</p>
+            <p>Search, filter, and track issued, returned, and overdue books.</p>
         </div>
 
         <a class="btn primary" th:href="@{/borrow/issue}">Issue Book</a>
@@ -19,9 +19,57 @@
 
     <div th:replace="~{fragments/messages :: messages}"></div>
 
-    <div class="filter-bar">
-        <a class="btn" th:href="@{/borrow/records}">All Records</a>
-        <a class="btn secondary" th:href="@{/borrow/records(filter='active')}">Active Issued Records</a>
+    <form class="filter-card" th:action="@{/borrow/records}" method="get">
+        <div class="filter-row">
+            <div class="filter-group large">
+                <label>Search</label>
+                <input type="text"
+                       name="keyword"
+                       placeholder="Search by book title, ISBN, member name, email, or phone"
+                       th:value="${keyword}">
+            </div>
+
+            <div class="filter-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="ALL" th:selected="${status == 'ALL'}">All</option>
+                    <option value="ISSUED" th:selected="${status == 'ISSUED'}">Issued</option>
+                    <option value="RETURNED" th:selected="${status == 'RETURNED'}">Returned</option>
+                </select>
+            </div>
+
+            <div class="filter-group small">
+                <label>Page Size</label>
+                <select name="size" onchange="this.form.submit()">
+                    <option th:each="option : ${pageSizes}"
+                            th:value="${option}"
+                            th:text="${option}"
+                            th:selected="${pageSize == option}">
+                        10
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="checkbox-row">
+            <label class="checkbox-label">
+                <input type="checkbox" name="overdue" value="true" th:checked="${overdue}">
+                Show overdue issued records only
+            </label>
+        </div>
+
+        <input type="hidden" name="page" value="0">
+
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">Apply Filters</button>
+            <a class="btn secondary" th:href="@{/borrow/records}">Reset</a>
+        </div>
+    </form>
+
+    <div class="result-summary">
+        <span th:text="'Showing ' + ${recordPage.numberOfElements} + ' of ' + ${recordPage.totalElements} + ' borrow records'">
+            Showing 0 of 0 records
+        </span>
     </div>
 
     <div class="table-card">
@@ -72,6 +120,25 @@
             </tbody>
         </table>
     </div>
+
+    <nav class="pagination" th:if="${recordPage.totalPages > 1}">
+        <a class="page-link"
+           th:classappend="${recordPage.first} ? ' disabled' : ''"
+           th:href="${recordPage.first} ? '#' : @{/borrow/records(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword}, status=${status}, overdue=${overdue})}">
+            Previous
+        </a>
+
+        <span class="page-info"
+              th:text="'Page ' + ${currentPage + 1} + ' of ' + ${recordPage.totalPages}">
+            Page 1 of 1
+        </span>
+
+        <a class="page-link"
+           th:classappend="${recordPage.last} ? ' disabled' : ''"
+           th:href="${recordPage.last} ? '#' : @{/borrow/records(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword}, status=${status}, overdue=${overdue})}">
+            Next
+        </a>
+    </nav>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

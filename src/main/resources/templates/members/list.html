@@ -11,7 +11,7 @@
     <div class="page-header">
         <div>
             <h1>Members</h1>
-            <p>Manage library members.</p>
+            <p>Search, filter, and manage library members.</p>
         </div>
 
         <a class="btn primary" th:href="@{/members/add}">Add Member</a>
@@ -19,11 +19,51 @@
 
     <div th:replace="~{fragments/messages :: messages}"></div>
 
-    <form class="search-form" th:action="@{/members}" method="get">
-        <input type="text" name="keyword" placeholder="Search by name, email, or phone" th:value="${keyword}">
-        <button type="submit" class="btn">Search</button>
-        <a class="btn secondary" th:href="@{/members}">Reset</a>
+    <form class="filter-card" th:action="@{/members}" method="get">
+        <div class="filter-row">
+            <div class="filter-group large">
+                <label>Search</label>
+                <input type="text"
+                       name="keyword"
+                       placeholder="Search by name, email, phone, or address"
+                       th:value="${keyword}">
+            </div>
+
+            <div class="filter-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="ALL" th:selected="${status == 'ALL'}">All</option>
+                    <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
+                    <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
+                </select>
+            </div>
+
+            <div class="filter-group small">
+                <label>Page Size</label>
+                <select name="size" onchange="this.form.submit()">
+                    <option th:each="option : ${pageSizes}"
+                            th:value="${option}"
+                            th:text="${option}"
+                            th:selected="${pageSize == option}">
+                        10
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="page" value="0">
+
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">Apply Filters</button>
+            <a class="btn secondary" th:href="@{/members}">Reset</a>
+        </div>
     </form>
+
+    <div class="result-summary">
+        <span th:text="'Showing ' + ${memberPage.numberOfElements} + ' of ' + ${memberPage.totalElements} + ' members'">
+            Showing 0 of 0 members
+        </span>
+    </div>
 
     <div class="table-card">
         <table>
@@ -70,6 +110,25 @@
             </tbody>
         </table>
     </div>
+
+    <nav class="pagination" th:if="${memberPage.totalPages > 1}">
+        <a class="page-link"
+           th:classappend="${memberPage.first} ? ' disabled' : ''"
+           th:href="${memberPage.first} ? '#' : @{/members(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword}, status=${status})}">
+            Previous
+        </a>
+
+        <span class="page-info"
+              th:text="'Page ' + ${currentPage + 1} + ' of ' + ${memberPage.totalPages}">
+            Page 1 of 1
+        </span>
+
+        <a class="page-link"
+           th:classappend="${memberPage.last} ? ' disabled' : ''"
+           th:href="${memberPage.last} ? '#' : @{/members(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword}, status=${status})}">
+            Next
+        </a>
+    </nav>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

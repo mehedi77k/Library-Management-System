@@ -5,10 +5,14 @@ import com.librarymanagement.entity.Member;
 import com.librarymanagement.repository.BorrowRecordRepository;
 import com.librarymanagement.repository.MemberRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,6 +22,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/members")
 public class MemberController {
+
+    private static final List<Integer> PAGE_SIZES = List.of(5, 10, 20, 50);
 
     private final MemberRepository memberRepository;
     private final BorrowRecordRepository borrowRecordRepository;
@@ -33,23 +39,39 @@ public class MemberController {
     @GetMapping
     public String listMembers(
             @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false, defaultValue = "ALL") String status,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             Model model
     ) {
-        List<Member> members;
+        int validPage = Math.max(page, 0);
+        int validSize = normalizePageSize(size);
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            String searchText = keyword.trim();
-            members = memberRepository.findByNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrPhoneContainingIgnoreCase(
-                    searchText,
-                    searchText,
-                    searchText
-            );
-        } else {
-            members = memberRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        }
+        String cleanKeyword = normalizeText(keyword);
+        String selectedStatus = normalizeStatus(status);
+        Boolean activeStatus = resolveActiveStatus(selectedStatus);
 
-        model.addAttribute("members", members);
-        model.addAttribute("keyword", keyword);
+        Pageable pageable = PageRequest.of(
+                validPage,
+                validSize,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
+        Page<Member> memberPage = memberRepository.searchMembers(
+                cleanKeyword,
+                activeStatus,
+                pageable
+        );
+
+        model.addAttribute("memberPage", memberPage);
+        model.addAttribute("members", memberPage.getContent());
+
+        model.addAttribute("keyword", cleanKeyword == null ? "" : cleanKeyword);
+        model.addAttribute("status", selectedStatus);
+
+        model.addAttribute("pageSizes", PAGE_SIZES);
+        model.addAttribute("pageSize", validSize);
+        model.addAttribute("currentPage", memberPage.getNumber());
 
         return "members/list";
     }
@@ -138,5 +160,47 @@ public class MemberController {
         }
 
         return "redirect:/members";
+    }
+
+    private int normalizePageSize(int size) {
+        if (PAGE_SIZES.contains(size)) {
+            return size;
+        }
+
+        return 10;
+    }
+
+    private String normalizeText(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+
+        return value.trim();
+    }
+
+    private String normalizeStatus(String status) {
+        if (!StringUtils.hasText(status)) {
+            return "ALL";
+        }
+
+        String value = status.trim().toUpperCase();
+
+        if (value.equals("ACTIVE") || value.equals("INACTIVE")) {
+            return value;
+        }
+
+        return "ALL";
+    }
+
+    private Boolean resolveActiveStatus(String status) {
+        if ("ACTIVE".equals(status)) {
+            return true;
+        }
+
+        if ("INACTIVE".equals(status)) {
+            return false;
+        }
+
+        return null;
     }
 }

@@ -5,10 +5,14 @@ import com.librarymanagement.entity.BorrowStatus;
 import com.librarymanagement.repository.BookRepository;
 import com.librarymanagement.repository.BorrowRecordRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -18,6 +22,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/books")
 public class BookController {
+
+    private static final List<Integer> PAGE_SIZES = List.of(5, 10, 20, 50);
 
     private final BookRepository bookRepository;
     private final BorrowRecordRepository borrowRecordRepository;
@@ -33,23 +39,44 @@ public class BookController {
     @GetMapping
     public String listBooks(
             @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "availability", required = false, defaultValue = "ALL") String availability,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
             Model model
     ) {
-        List<Book> books;
+        int validPage = Math.max(page, 0);
+        int validSize = normalizePageSize(size);
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            String searchText = keyword.trim();
-            books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrIsbnContainingIgnoreCase(
-                    searchText,
-                    searchText,
-                    searchText
-            );
-        } else {
-            books = bookRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        }
+        String cleanKeyword = normalizeText(keyword);
+        String cleanCategory = normalizeText(category);
+        String selectedAvailability = normalizeAvailability(availability);
+        Boolean availableStatus = resolveAvailableStatus(selectedAvailability);
 
-        model.addAttribute("books", books);
-        model.addAttribute("keyword", keyword);
+        Pageable pageable = PageRequest.of(
+                validPage,
+                validSize,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+
+        Page<Book> bookPage = bookRepository.searchBooks(
+                cleanKeyword,
+                cleanCategory,
+                availableStatus,
+                pageable
+        );
+
+        model.addAttribute("bookPage", bookPage);
+        model.addAttribute("books", bookPage.getContent());
+
+        model.addAttribute("keyword", cleanKeyword == null ? "" : cleanKeyword);
+        model.addAttribute("selectedCategory", cleanCategory == null ? "" : cleanCategory);
+        model.addAttribute("availability", selectedAvailability);
+
+        model.addAttribute("categories", bookRepository.findDistinctCategories());
+        model.addAttribute("pageSizes", PAGE_SIZES);
+        model.addAttribute("pageSize", validSize);
+        model.addAttribute("currentPage", bookPage.getNumber());
 
         return "books/list";
     }
@@ -156,5 +183,47 @@ public class BookController {
         }
 
         return "redirect:/books";
+    }
+
+    private int normalizePageSize(int size) {
+        if (PAGE_SIZES.contains(size)) {
+            return size;
+        }
+
+        return 10;
+    }
+
+    private String normalizeText(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+
+        return value.trim();
+    }
+
+    private String normalizeAvailability(String availability) {
+        if (!StringUtils.hasText(availability)) {
+            return "ALL";
+        }
+
+        String value = availability.trim().toUpperCase();
+
+        if (value.equals("AVAILABLE") || value.equals("UNAVAILABLE")) {
+            return value;
+        }
+
+        return "ALL";
+    }
+
+    private Boolean resolveAvailableStatus(String availability) {
+        if ("AVAILABLE".equals(availability)) {
+            return true;
+        }
+
+        if ("UNAVAILABLE".equals(availability)) {
+            return false;
+        }
+
+        return null;
     }
 }

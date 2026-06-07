@@ -11,7 +11,7 @@
     <div class="page-header">
         <div>
             <h1>Books</h1>
-            <p>Manage all library books.</p>
+            <p>Search, filter, and manage all library books.</p>
         </div>
 
         <a class="btn primary" th:href="@{/books/add}">Add Book</a>
@@ -19,11 +19,64 @@
 
     <div th:replace="~{fragments/messages :: messages}"></div>
 
-    <form class="search-form" th:action="@{/books}" method="get">
-        <input type="text" name="keyword" placeholder="Search by title, author, or ISBN" th:value="${keyword}">
-        <button type="submit" class="btn">Search</button>
-        <a class="btn secondary" th:href="@{/books}">Reset</a>
+    <form class="filter-card" th:action="@{/books}" method="get">
+        <div class="filter-row">
+            <div class="filter-group large">
+                <label>Search</label>
+                <input type="text"
+                       name="keyword"
+                       placeholder="Search by title, author, ISBN, or category"
+                       th:value="${keyword}">
+            </div>
+
+            <div class="filter-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category}"
+                            th:text="${category}"
+                            th:selected="${selectedCategory == category}">
+                        Category
+                    </option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Availability</label>
+                <select name="availability">
+                    <option value="ALL" th:selected="${availability == 'ALL'}">All</option>
+                    <option value="AVAILABLE" th:selected="${availability == 'AVAILABLE'}">Available</option>
+                    <option value="UNAVAILABLE" th:selected="${availability == 'UNAVAILABLE'}">Unavailable</option>
+                </select>
+            </div>
+
+            <div class="filter-group small">
+                <label>Page Size</label>
+                <select name="size" onchange="this.form.submit()">
+                    <option th:each="option : ${pageSizes}"
+                            th:value="${option}"
+                            th:text="${option}"
+                            th:selected="${pageSize == option}">
+                        10
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="page" value="0">
+
+        <div class="filter-actions">
+            <button type="submit" class="btn primary">Apply Filters</button>
+            <a class="btn secondary" th:href="@{/books}">Reset</a>
+        </div>
     </form>
+
+    <div class="result-summary">
+        <span th:text="'Showing ' + ${bookPage.numberOfElements} + ' of ' + ${bookPage.totalElements} + ' books'">
+            Showing 0 of 0 books
+        </span>
+    </div>
 
     <div class="table-card">
         <table>
@@ -74,6 +127,25 @@
             </tbody>
         </table>
     </div>
+
+    <nav class="pagination" th:if="${bookPage.totalPages > 1}">
+        <a class="page-link"
+           th:classappend="${bookPage.first} ? ' disabled' : ''"
+           th:href="${bookPage.first} ? '#' : @{/books(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword}, category=${selectedCategory}, availability=${availability})}">
+            Previous
+        </a>
+
+        <span class="page-info"
+              th:text="'Page ' + ${currentPage + 1} + ' of ' + ${bookPage.totalPages}">
+            Page 1 of 1
+        </span>
+
+        <a class="page-link"
+           th:classappend="${bookPage.last} ? ' disabled' : ''"
+           th:href="${bookPage.last} ? '#' : @{/books(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword}, category=${selectedCategory}, availability=${availability})}">
+            Next
+        </a>
+    </nav>
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
