@@ -17,6 +17,7 @@
         <a th:href="@{/members}">Members</a>
         <a th:href="@{/borrow/issue}">Issue Book</a>
         <a th:href="@{/borrow/records}">Borrow Records</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/librarians}">Librarians</a>
 
         <span class="logged-user">
             Logged in as <strong sec:authentication="name">user</strong>
@@ -66,6 +67,37 @@
         <div class="stat-card danger">
             <h3>Overdue Books</h3>
             <p th:text="${overdueBooks}">0</p>
+        </div>
+    </section>
+
+    <section class="quick-actions">
+        <h2>Quick Actions</h2>
+
+        <div class="quick-action-grid">
+            <a class="quick-action-card" th:href="@{/books}">
+                <h3>Manage Books</h3>
+                <p>Add, edit, search, and manage book availability.</p>
+            </a>
+
+            <a class="quick-action-card" th:href="@{/members}">
+                <h3>Manage Members</h3>
+                <p>Add, edit, and manage library member information.</p>
+            </a>
+
+            <a class="quick-action-card" th:href="@{/borrow/issue}">
+                <h3>Issue Book</h3>
+                <p>Create a new book borrowing record.</p>
+            </a>
+
+            <a class="quick-action-card" th:href="@{/borrow/records}">
+                <h3>Borrow Records</h3>
+                <p>Track issued, returned, and overdue books.</p>
+            </a>
+
+            <a sec:authorize="hasRole('ADMIN')" class="quick-action-card" th:href="@{/librarians}">
+                <h3>Manage Librarians</h3>
+                <p>Create, update, disable, and reset librarian accounts.</p>
+            </a>
         </div>
     </section>
 </main>
