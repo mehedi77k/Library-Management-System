@@ -2,12 +2,19 @@
     box-sizing: border-box;
 }
 
+html {
+    min-height: 100%;
+}
+
 body {
     margin: 0;
+    min-height: 100vh;
     font-family: Arial, Helvetica, sans-serif;
     background: #f4f6f8;
     color: #1f2937;
 }
+
+/* Navbar */
 
 .navbar {
     background: #111827;
@@ -16,28 +23,53 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
 }
 
 .brand {
     font-size: 20px;
     font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .nav-links {
     display: flex;
-    gap: 16px;
+    gap: 8px;
     flex-wrap: wrap;
     align-items: center;
 }
 
 .nav-links a {
-    color: #ffffff;
+    color: #d1d5db;
     text-decoration: none;
     font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 8px;
 }
 
 .nav-links a:hover {
-    text-decoration: underline;
+    background: #1f2937;
+    color: #ffffff;
+}
+
+.nav-links a.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.navbar-right {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .logged-user {
@@ -53,8 +85,8 @@ body {
     border: 1px solid #374151;
     background: #1f2937;
     color: #ffffff;
-    padding: 7px 12px;
-    border-radius: 7px;
+    padding: 8px 12px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
 }
@@ -62,6 +94,8 @@ body {
 .logout-button:hover {
     background: #374151;
 }
+
+/* Layout */
 
 .container {
     max-width: 1180px;
@@ -90,6 +124,15 @@ body {
     margin: 0;
     color: #6b7280;
 }
+
+.footer {
+    margin: 40px auto 24px auto;
+    text-align: center;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+/* Dashboard */
 
 .stats-grid {
     display: grid;
@@ -161,9 +204,12 @@ body {
     line-height: 1.5;
 }
 
+/* Cards and Tables */
+
 .table-card,
 .form-card,
-.details-card {
+.details-card,
+.error-page-card {
     background: #ffffff;
     border-radius: 14px;
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
@@ -181,6 +227,27 @@ body {
 
 .details-card p {
     margin: 8px 0;
+}
+
+.error-page-card {
+    padding: 42px 28px;
+    text-align: center;
+}
+
+.error-code {
+    font-size: 72px;
+    font-weight: 800;
+    color: #dc2626;
+    line-height: 1;
+}
+
+.error-page-card h1 {
+    margin: 16px 0 10px 0;
+}
+
+.error-page-card p {
+    color: #6b7280;
+    margin-bottom: 24px;
 }
 
 table {
@@ -207,7 +274,11 @@ th {
 }
 
 .actions-column {
-    min-width: 280px;
+    min-width: 190px;
+}
+
+.actions-column.wide {
+    min-width: 320px;
 }
 
 .empty {
@@ -215,6 +286,8 @@ th {
     color: #6b7280;
     padding: 30px;
 }
+
+/* Buttons */
 
 .btn {
     display: inline-block;
@@ -264,6 +337,8 @@ th {
     margin: 0;
 }
 
+/* Badges */
+
 .badge {
     padding: 5px 9px;
     border-radius: 999px;
@@ -286,6 +361,8 @@ th {
     color: #92400e;
 }
 
+/* Search and Filters */
+
 .search-form,
 .filter-bar {
     display: flex;
@@ -301,6 +378,8 @@ th {
     border: 1px solid #d1d5db;
     border-radius: 8px;
 }
+
+/* Forms */
 
 .form-card {
     padding: 24px;
@@ -336,7 +415,14 @@ th {
     display: flex;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
+
+.form-actions.center {
+    justify-content: center;
+}
+
+/* Alerts and Text */
 
 .alert {
     padding: 12px 14px;
@@ -430,17 +516,33 @@ th {
     font-size: 13px;
 }
 
+/* Responsive */
+
+@media (max-width: 1000px) {
+    .navbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .navbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 @media (max-width: 900px) {
     .quick-action-grid {
         grid-template-columns: 1fr;
     }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-@media (max-width: 800px) {
-    .navbar {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
+@media (max-width: 700px) {
+    .container {
+        margin: 24px auto;
     }
 
     .page-header {
@@ -448,7 +550,22 @@ th {
         flex-direction: column;
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    .nav-links {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .nav-links a {
+        width: 100%;
+    }
+
+    .navbar-right {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-form input {
+        min-width: 100%;
     }
 }

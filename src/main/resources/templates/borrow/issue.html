@@ -2,32 +2,10 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <title>Issue Book | Library Management System</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/head :: head('Issue Book')}"></head>
 <body>
 
-<nav class="navbar">
-    <div class="brand">Library Management System</div>
-    <div class="nav-links">
-        <a th:href="@{/dashboard}">Dashboard</a>
-        <a th:href="@{/books}">Books</a>
-        <a th:href="@{/members}">Members</a>
-        <a th:href="@{/borrow/issue}">Issue Book</a>
-        <a th:href="@{/borrow/records}">Borrow Records</a>
-
-        <span class="logged-user">
-            Logged in as <strong sec:authentication="name">user</strong>
-        </span>
-
-        <form class="logout-form" th:action="@{/logout}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <button type="submit" class="logout-button">Logout</button>
-        </form>
-    </div>
-</nav>
+<div th:replace="~{fragments/navbar :: navbar('issue')}"></div>
 
 <main class="container narrow">
     <div class="page-header">
@@ -37,8 +15,7 @@
         </div>
     </div>
 
-    <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+    <div th:replace="~{fragments/messages :: messages}"></div>
 
     <form class="form-card" th:action="@{/borrow/issue}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -80,6 +57,8 @@
         </div>
     </form>
 </main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

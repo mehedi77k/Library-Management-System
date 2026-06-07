@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Access Denied')}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar('none')}"></div>
+
+<main class="container narrow">
+    <div class="error-page-card">
+        <div class="error-code">403</div>
+        <h1>Access Denied</h1>
+        <p>You do not have permission to access this page.</p>
+
+        <div class="form-actions center">
+            <a class="btn primary" th:href="@{/dashboard}">Go to Dashboard</a>
+            <a class="btn secondary" th:href="@{/books}">View Books</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
